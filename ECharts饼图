@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<script type="text/javascript" src='js/echarts.js'></script>
+</head>
+
+<body>
+	<div id="main" style="width: 800px; height: 600px"></div>
+	<script type="text/javascript">
+		//基于准备好的dom,初始化ECharts图表
+		var myChart = echarts.init(document.getElementById("main"));
+		var option = {  //指定图表的配置项和数据
+			color: ['DarkGreen', 'red', 'LimeGreen', 'blue', 'Purple', 'GreenYellow'],
+			backgroundColor: 'rgba(128, 128, 128, 0.1)',  //rgba设置透明度0.1
+			title: {  //配置标题组件
+				text: '影响健康、寿命的各类因素',  //设置主标题
+				subtext: 'WHO统计调查报告',  //设置次标题
+				left: 144, top: 5  //设置主次标题都左右居中
+			},
+			tooltip: {  //配置提示框组件
+				trigger: 'item',
+				//formatter: "{a} <br/>{b} : {c} ({d}%)",
+				formatter: function (data) {
+					//console.log(data)
+					return data.seriesName + "<br/>" + data.name + ":" + data.value
+						//百分比的小数点1位，默认为2位
+						+ "(" + data.percent.toFixed(1) + "%)";
+				}
+			},
+			legend: {  //配置图例组件
+				orient: 'vertical',  //设置垂直排列
+				left: 22,  //设置图例左边距
+				top: 22,  //设置图例顶边距
+				data: ['生活方式', '遗传因素', '社会因素', '医疗条件', '气候环境'],
+			},
+			toolbox: {  //配置工具箱组件
+				show: true,  //设置是否显示工具箱
+				left: 444,  //设置工具箱左边距
+				top: 28,  //设置工具箱顶边距
+				feature: {
+					mark: { show: true },
+					dataView: { show: true, readOnly: false },
+					magicType: {
+						show: true,
+						type: ['pie', 'funnel'],
+						option: {
+							funnel: {
+								x: '25%', width: '50%',
+								funnelAlign: 'left', max: 1548
+							}
+						}
+					},
+					restore: { show: true },
+					saveAsImage: { show: true }
+				}
+			},
+			calculable: true,
+			series: [  //配置数据系列
+				{
+					cursor: 'crosshair',  //设置经过扇区时，鼠标的形状为十字线
+					name: '访问来源', type: 'pie',
+					itemStyle: {
+						normal: {
+							borderColor: '#fff', borderWidth: 1,
+							label: { show: true, position: 'outer' },
+							labelLine: {
+								show: true, length: 4,
+								lineStyle: { width: 1, type: 'solid' }
+							}
+						}
+					},
+					legendHoverLink: false,
+					radius: ['45%', '75%'],  //设置半径，前者表示内半径，后者表示外半径	
+					center: ['58%', '55%'],  //设置圆心
+					data: [{ value: 60, name: '生活方式' }, { value: 15, name: '遗传因素' },
+					{ value: 10, name: '社会因素' }, { value: 8, name: '医疗条件' },
+					{ value: 7, name: '气候环境' }]//设置数据的具体值
+				}
+			]
+		};
+		myChart.setOption(option);//使用刚指定的配置项和数据显示图表
+		//动画效果的要求
+		//(1)在高亮的扇区上显示tooltip
+		//(2)鼠标没有移入时，饼图自动循环高亮各扇区
+		//(3)鼠标移入时，取消自动循环高亮，只高亮鼠标选中的那一个扇区
+		//(4)鼠标移出后，又恢复自动循环高亮各扇区
+		var _this = this
+		var isSet = true  //为了做判断：当鼠标移上去时，自动高亮就被取消
+		var currentIndex = -1  //设置循环起始位置
+		//1--自动高亮展示
+		var chartHover = function () {  //创建自定义函数chartHover
+			var dataLen = option.series[0].data.length
+			_this.myChart.dispatchAction({
+				type: 'downplay',  //取消之前高亮的图形
+				seriesIndex: 0,
+				dataIndex: currentIndex
+			})
+			currentIndex = (currentIndex + 1) % dataLen
+			_this.myChart.dispatchAction({
+				type: 'highlight',  //高亮当前图形
+				seriesIndex: 0,
+				dataIndex: currentIndex
+			})
+			_this.myChart.dispatchAction({
+				type: 'showTip',  //显示tooltip
+				seriesIndex: 0,
+				dataIndex: currentIndex
+			})
+		}
+		//调用chartHover自定义函数，时间间隔为3秒
+		_this.startCharts = setInterval(chartHover, 3000)
+		//2--鼠标移上去时的动画效果
+		this.myChart.on('mouseover', function (param) {
+			isSet = false,
+				clearInterval(_this.startCharts),
+				_this.myChart.dispatchAction({
+					type: 'downplay',  //取消之前高亮的图形
+					seriesIndex: 0,
+					dataIndex: param.dataIndex
+				})
+			_this.myChart.dispatchAction({
+				type: 'highlight',  //高亮当前图形
+				seriesIndex: 0,
+				dataIndex: param.dataIndex
+			})
+			_this.myChart.dispatchAction({
+				type: 'showTip',  //显示tooltip
+				seriesIndex: 0,
+				dataIndex: param.dataIndex
+			})
+		})
+		//3--鼠标移出之后，恢复自动高亮
+		this.myChart.on('mouseout', function (param) {
+			if (!isSet) {
+				//调用chartHover自定义函数，时间间隔为3秒
+				_this.startCharts = setInterval(chartHover, 3000),
+					isSet = true
+			}
+		});
+
+	</script>
+</body>
+
+</html>
