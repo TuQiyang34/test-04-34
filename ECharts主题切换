@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset = UTF-8">
+	<script src="js/echarts.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jquery-3.3.1.js"></script>
+	<script src='js/roma.js'></script>
+	<script src='js/macarons.js'></script>
+	<script src='js/roma.js'></script>
+	<script src='js/shine.js'></script>
+	<script src='js/vintage.js'></script>
+	<script src='js/infographic.js'></script>
+</head>
+
+<body>
+	<div id="themeArea"><label>ECharts主题切换：</label></div>
+	<select name="" id="sel">
+		<option value="dark">dark</option>
+		<option value="macarons">macarons</option>
+		<option value="infographic">infographic</option>
+		<option value="roma">roma</option>
+		<option value="shine">shine</option>
+		<option value="vintage">vintage</option>
+	</select>
+	<div id='main' style="height:399px;"></div>
+</body>
+
+</html>
+<script>
+	//基于准备好的dom，初始化echarts实例
+	var myChart = echarts.init(document.getElementById('main'), 'dark');
+	//指定图表的配置项和数据
+	var option = {  //指定图表的配置项和数据
+		//backgroundColor:'WhiteSmoke'，  //当设置了color和背景色后，主题的背景色无效
+		title: { text: '某大学各专业招生情况分析', left: 60, top: 10 },
+		tooltip: {},  //配置提示框组件
+		legend: { left: 320, top: 10, data: ['2018', '2019', '2020'] },  //配置图例组件
+		xAxis: { data: ["大数据", "云计算", "人工智能", "网络工程", "移动开发", "软件开发"] },
+		grid: { show: true },  //配置网格组件
+		yAxis: {},
+		series: [  //配置数据系列
+			{ name: '2018', type: 'bar', data: [122, 55, 44, 56, 110, 222] },
+			{ name: '2019', type: 'bar', data: [315, 98, 122, 96, 115, 278] },
+			{ name: '2020', type: 'bar', data: [382, 123, 222, 94, 125, 369] },
+		]
+	};
+	//使用刚指定的配置项和数据显示图表。
+	myChart.setOption(option);
+	$('#sel').change(function () {
+		myChart.dispose();
+		let Theme = $(this).val();
+		//基于准备好的dom，初始化echarts实例
+		myChart = echarts.init(document.getElementById('main'), Theme);
+		//使用刚指定的配置项和数据显示图表
+		myChart.setOption(option);
+	});
+</script>
