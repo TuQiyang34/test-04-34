@@ -33,7 +33,7 @@
 	//指定图表的配置项和数据
 	var option = {  //指定图表的配置项和数据
 		//backgroundColor:'WhiteSmoke'，  //当设置了color和背景色后，主题的背景色无效
-		title: { text: '某大学各专业招生情况分析', left: 60, top: 10 },
+		title: { text: '某大学各专业招生情况分析', left: 50, top: 10 },
 		tooltip: {},  //配置提示框组件
 		legend: { left: 320, top: 10, data: ['2018', '2019', '2020'] },  //配置图例组件
 		xAxis: { data: ["大数据", "云计算", "人工智能", "网络工程", "移动开发", "软件开发"] },
